@@ -87,27 +87,34 @@
 </div>
 
 <script>
+  // Supabase configuration
   const SUPABASE_URL = "https://cnbrgxizrssqaewxswfw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_qK9tJuQ4MU2uzHReXHTxlw_XsOilfbW";
   const PDF_DOWNLOAD_URL = "https://drive.google.com/file/d/1cNdeB4copF4pMD_l1sWlB8V5BoUeGUT-/view?usp=sharing";
 
+  // Create Supabase client
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // Get form elements
   const form = document.getElementById('optinForm');
   const errorDiv = document.getElementById('errorMsg');
   const successDiv = document.getElementById('successMsg');
   const spinner = document.getElementById('spinner');
 
+  // Handle form submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Hide previous messages, show spinner
     errorDiv.style.display = 'none';
     successDiv.style.display = 'none';
     spinner.style.display = 'block';
 
+    // Get form values
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
 
+    // Validate inputs
     if (!name || !email) {
       errorDiv.textContent = 'Pakilagay ang iyong pangalan at email.';
       errorDiv.style.display = 'block';
@@ -116,12 +123,18 @@
     }
 
     try {
+      // Save to Supabase
       const { data, error } = await supabaseClient
         .from('leads')
-        .insert([{ name, email, lead_source: 'website_optin' }]);
+        .insert([{ 
+          name: name, 
+          email: email, 
+          lead_source: 'website_optin' 
+        }]);
 
       spinner.style.display = 'none';
 
+      // Handle error
       if (error) {
         console.error('Supabase insert error:', error);
         errorDiv.textContent = 'May problema sa pag-save. Pakisubukan ulit.';
@@ -129,14 +142,17 @@
         return;
       }
 
+      // Success - show message and redirect
       successDiv.style.display = 'block';
       form.reset();
 
+      // Redirect to PDF after 1.5 seconds
       setTimeout(() => {
         window.location.href = PDF_DOWNLOAD_URL;
       }, 1500);
 
     } catch (err) {
+      // Handle unexpected errors
       spinner.style.display = 'none';
       errorDiv.textContent = 'May technical issue. Pakisubukan ulit mamaya.';
       errorDiv.style.display = 'block';
