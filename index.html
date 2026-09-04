@@ -70,8 +70,8 @@
   <p>Ilagay ang iyong pangalan at email para ma-download ang iyong libreng guide.</p>
 
   <form id="optinForm">
-    <label for="name">Pangalan</label>
-    <input type="text" id="name" placeholder="Hal. Juan Dela Cruz" required />
+    <label for="full_name">Pangalan</label>
+    <input type="text" id="full_name" placeholder="Hal. Juan Dela Cruz" required />
 
     <label for="email">Email Address</label>
     <input type="email" id="email" placeholder="juan@email.com" required />
@@ -111,11 +111,11 @@
     spinner.style.display = 'block';
 
     // Get form values
-    const name = document.getElementById('name').value.trim();
+    const full_name = document.getElementById('full_name').value.trim();
     const email = document.getElementById('email').value.trim();
 
     // Validate inputs
-    if (!name || !email) {
+    if (!full_name || !email) {
       errorDiv.textContent = 'Pakilagay ang iyong pangalan at email.';
       errorDiv.style.display = 'block';
       spinner.style.display = 'none';
@@ -127,7 +127,7 @@
       const { data, error } = await supabaseClient
         .from('leads')
         .insert([{ 
-          full_name: name, 
+          full_name: full_name, 
           email: email, 
           lead_source: 'website_optin' 
         }]);
