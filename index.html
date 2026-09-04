@@ -123,11 +123,11 @@
     }
 
     try {
-      // Save to Supabase
+      // Save to Supabase - using full_name column
       const { data, error } = await supabaseClient
         .from('leads')
         .insert([{ 
-          name: name, 
+          full_name: name, 
           email: email, 
           lead_source: 'website_optin' 
         }]);
