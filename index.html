@@ -87,11 +87,8 @@
 </div>
 
 <script>
-  // --- SUPABASE CREDENTIALS (Updated) ---
   const SUPABASE_URL = "https://cnbrgxizrssqaewxswfw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_qK9tJuQ4MU2uzHReXHTxlw_XsOilfbW";
-
-  // --- PDF DOWNLOAD LINK (Updated) ---
   const PDF_DOWNLOAD_URL = "https://drive.google.com/file/d/1cNdeB4copF4pMD_l1sWlB8V5BoUeGUT-/view?usp=sharing";
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -104,7 +101,6 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // I-hide ang mga previous messages at ipakita ang spinner
     errorDiv.style.display = 'none';
     successDiv.style.display = 'none';
     spinner.style.display = 'block';
@@ -119,15 +115,13 @@
       return;
     }
 
-    // I-save sa Supabase leads table
     const { data, error } = await supabase
       .from('leads')
       .insert([
         { 
           name: name,
           email: email,
-          lead_source: 'website_optin',
-          created_at: new Date().toISOString()
+          lead_source: 'website_optin'
         }
       ]);
 
@@ -140,11 +134,9 @@
       return;
     }
 
-    // Tagumpay: ipakita ang success message at i-redirect
     successDiv.style.display = 'block';
     form.reset();
 
-    // I-redirect sa PDF after 2 seconds
     setTimeout(() => {
       window.location.href = PDF_DOWNLOAD_URL;
     }, 1500);
