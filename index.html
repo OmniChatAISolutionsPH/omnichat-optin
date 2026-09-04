@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FREE AI Automation Starter Kit | OmniChat AI</title>
+  <!-- Supabase JS library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3a5f, #2b6c9e);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      max-width: 500px;
+      width: 100%;
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    h1 { font-size: 28px; color: #0b2b44; margin-bottom: 8px; }
+    .sub { color: #2b6c9e; font-weight: 600; margin-bottom: 24px; }
+    p { color: #333; margin-bottom: 24px; line-height: 1.6; }
+    form { display: flex; flex-direction: column; gap: 16px; text-align: left; }
+    label { font-weight: 600; color: #1e3a5f; font-size: 14px; }
+    input {
+      padding: 12px 16px;
+      border: 2px solid #dce3ed;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2b6c9e;
+      box-shadow: 0 0 0 3px rgba(43, 108, 158, 0.2);
+    }
+    button {
+      background: #2b6c9e;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 40px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+    }
+    button:hover { background: #1e4f79; transform: scale(1.01); }
+    .footer { margin-top: 20px; font-size: 13px; color: #6b7a8a; }
+    .error { color: #b22234; background: #ffe6e6; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
+    .success { color: #0a5e2a; background: #e0f7e6; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>📘 AI Automation Starter Kit</h1>
+  <div class="sub">FREE Digital Product</div>
+  <p>Ilagay ang iyong pangalan at email para ma-download ang iyong libreng guide.</p>
+
+  <form id="optinForm">
+    <label for="name">Pangalan</label>
+    <input type="text" id="name" placeholder="Hal. Juan Dela Cruz" required />
+
+    <label for="email">Email Address</label>
+    <input type="email" id="email" placeholder="juan@email.com" required />
+
+    <button type="submit">📥 Kunin ang FREE Kit</button>
+  </form>
+
+  <div id="errorMsg" class="error"></div>
+  <div id="successMsg" class="success">✅ Salamat! Ikaw ay na-redirect sa iyong download.</div>
+
+  <div class="footer">🔒 Hindi namin ibebenta ang iyong data. Magagamit ito para sa aming consultation offer.</div>
+</div>
+
+<script>
+  // --- Palitan ang mga ito ng iyong Supabase credentials ---
+  const SUPABASE_URL = "https://cnbrgxizrssqaewxswfw.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_qK9tJuQ4MU2uzHReXHTxlw_XsOilfbW";
+
+  // --- Palitan ito ng iyong actual PDF link ---
+  const PDF_DOWNLOAD_URL = "https://drive.google.com/your-pdf-link-here";
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const form = document.getElementById('optinForm');
+  const errorDiv = document.getElementById('errorMsg');
+  const successDiv = document.getElementById('successMsg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // I-hide ang mga previous messages
+    errorDiv.style.display = 'none';
+    successDiv.style.display = 'none';
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    if (!name || !email) {
+      errorDiv.textContent = 'Pakilagay ang iyong pangalan at email.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    // I-save sa Supabase leads table
+    const { data, error } = await supabase
+      .from('leads')
+      .insert([
+        { 
+          name: name,
+          email: email,
+          lead_source: 'website_optin',
+          created_at: new Date().toISOString()
+        }
+      ]);
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      errorDiv.textContent = 'May problema sa pag-save. Pakisubukan ulit.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    // Tagumpay: ipakita ang success message at i-redirect
+    successDiv.style.display = 'block';
+    form.reset();
+
+    // I-redirect sa PDF after 2 seconds
+    setTimeout(() => {
+      window.location.href = PDF_DOWNLOAD_URL;
+    }, 1500);
+  });
+</script>
+
+</body>
+</html>
