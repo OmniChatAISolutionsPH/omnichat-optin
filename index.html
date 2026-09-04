@@ -91,7 +91,7 @@
   const SUPABASE_KEY = "sb_publishable_qK9tJuQ4MU2uzHReXHTxlw_XsOilfbW";
   const PDF_DOWNLOAD_URL = "https://drive.google.com/file/d/1cNdeB4copF4pMD_l1sWlB8V5BoUeGUT-/view?usp=sharing";
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const form = document.getElementById('optinForm');
   const errorDiv = document.getElementById('errorMsg');
@@ -115,31 +115,33 @@
       return;
     }
 
-    const { data, error } = await supabase
-      .from('leads')
-      .insert([
-        { 
-          name: name,
-          email: email,
-          lead_source: 'website_optin'
-        }
-      ]);
+    try {
+      const { data, error } = await supabaseClient
+        .from('leads')
+        .insert([{ name, email, lead_source: 'website_optin' }]);
 
-    spinner.style.display = 'none';
+      spinner.style.display = 'none';
 
-    if (error) {
-      console.error('Supabase insert error:', error);
-      errorDiv.textContent = 'May problema sa pag-save. Pakisubukan ulit.';
+      if (error) {
+        console.error('Supabase insert error:', error);
+        errorDiv.textContent = 'May problema sa pag-save. Pakisubukan ulit.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      successDiv.style.display = 'block';
+      form.reset();
+
+      setTimeout(() => {
+        window.location.href = PDF_DOWNLOAD_URL;
+      }, 1500);
+
+    } catch (err) {
+      spinner.style.display = 'none';
+      errorDiv.textContent = 'May technical issue. Pakisubukan ulit mamaya.';
       errorDiv.style.display = 'block';
-      return;
+      console.error('Error:', err);
     }
-
-    successDiv.style.display = 'block';
-    form.reset();
-
-    setTimeout(() => {
-      window.location.href = PDF_DOWNLOAD_URL;
-    }, 1500);
   });
 </script>
 
